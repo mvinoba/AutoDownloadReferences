@@ -1,15 +1,19 @@
 import urllib
+import argparse
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-driver = webdriver.Chrome()
+
+def start_browser():
+    global driver
+    driver = webdriver.Chrome()
 
 
 def get_list_of_references_acmdl(doi):
     driver.get("https://doi.org/" + doi)
-    driver.find_element_by_id("tab-1015-btnEl").click()    
+    driver.find_element_by_xpath("//span[.='References']/parent::button").click()
     refs_table_text = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH,'//*[@id="cf_layoutareareferences"]/div/table/tbody'))).text
     refs_list = refs_table_text.split('\n')[1::2]
     return refs_list
@@ -46,4 +50,17 @@ def download_all_pdfs(pdfs_url):
         except urllib.error.HTTPError:
             print("{} of {}: Could not download {}".format(counter, total, url))
             counter += 1
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Get all the PDFs in a paper's reference")
+    parser.add_argument("doi", help="tries to find and download all paper's references", type=str)
+    args = parser.parse_args()
+
+    start_browser()
+    download_all_pdfs(get_references_pdf(get_list_of_references_acmdl(args.doi)))
+
+
+if __name__ == '__main__':
+    main()
 
