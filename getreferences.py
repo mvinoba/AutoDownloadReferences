@@ -1,5 +1,6 @@
 import urllib
 import argparse
+import sys
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -13,6 +14,8 @@ def start_browser():
 
 def get_list_of_references_acmdl(doi):
     driver.get("https://doi.org/" + doi)
+    if not driver.current_url.startswith("https://dl.acm.org/"):
+        sys.exit('DOI not available at ACM Digital Library')
     driver.find_element_by_xpath(
         "//span[.='References']/parent::button").click()
     refs_table_text = WebDriverWait(
