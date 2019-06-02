@@ -28,3 +28,9 @@ steps:
     pip install pytest pytest-azurepipelines
     pytest
   displayName: 'pytest'
+  
+- task: PythonScript@0
+  inputs:
+    scriptSource: 'filePath'
+    scriptPath: 'getreferences.py'
+    arguments: '10.1145/3145749.3149444'
